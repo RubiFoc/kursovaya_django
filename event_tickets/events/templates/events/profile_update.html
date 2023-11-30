@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Бронирование билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+            </ul>
+        </nav>
+        <div class="auth-right">
+            <a href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+    <div class="container row">
+        <div class="content full">
+            <div class="form profile-form">
+                <form method="POST" action="{% url 'profile_update' username=user.username %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h1>Изменить профиль</h1>
+    <div class="input-form">
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
+    </div>
+    <div class="input-form">
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
+    </div>
+    <div class="input-form">
+        {{ form.avatar.label_tag }}
+        {{ form.avatar }}
+    </div>
+    <div class="input-form">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+    </div>
+    <div class="input-form">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+    </div>
+    <div class="input-form">
+        <input type="submit" value="Сохранить">
+    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">&copy; 2023 Бронирование билетов</div>
+</body>
+</html>

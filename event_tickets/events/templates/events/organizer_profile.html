@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Бронирование билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header profile-header">
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+                {% if request.user.is_authenticated %}
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="auth-right">
+            <a href="{% url 'logout' %}">Выйти</a></li>
+        </div>
+    </div>
+    <div class="container row">
+        <div class="content profile-content">
+            {% if user.is_organizer %}
+            <h1>Мои мероприятия</h1>
+            {% for event in events_created %}
+            <div class="buyment-container">
+                <div class="buyment">
+                    <div class="buyment-left-photo">
+                        <img src="{{ event.event.photo.url }}">
+                    </div>
+                    <div class="buyment-right">
+                        <p>Название мероприятия: {{ event.event.title }}</p>
+                            <p>Дата создания: {{ event.creation_date }}</p>
+                            <p>Количество билетов: {{ event.quantity }}</p>
+                            <p><a href="{% url 'event_edit' slug=event.event.slug %}">Редактировать</a></p>
+                        </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="buyment">
+                <p>У вас пока нет мероприятий.</p>
+            </div>
+            {% endfor %}
+            <div class="pagination">
+    <span class="step-links">
+        {% if events_created.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ events_created.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ events_created.number }} из {{ events_created.paginator.num_pages }}.
+        </span>
+
+        {% if events_created.has_next %}
+            <a href="?page={{ events_created.next_page_number }}">следующая</a>
+            <a href="?page={{ events_created.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="profile-sidebar">
+            {% if user.avatar %}
+            <img class="avatar" src="{{ user.avatar.url }}"/>
+            {% else %}
+            <img class="avatar" src="{% static 'events/images/avatar.png '%}"/>
+            {% endif %}
+            <a href="{% url 'profile_update' username=user.username%}">Настройки</a>
+            <a href="{% url 'profile' username=user.username%}">Купленные билеты</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="post-container">
+  <div class="left-part-post">
+    {% if post.photo %}
+        <img class="img-article-left" src="{{post.photo.url}}">
+    {% endif %}
+  </div>
+
+  <div class="right-part-post">
+    <h1>{{post.title}}</h1>
+    <p class="price">{{post.price}} цена билета</p>
+    <p class="count_tickets">{{ post.count_tickets }} количество билетов</p>
+    <p class="last"><img class="date-img" src="{% static 'events/images/date.png '%}">Дата проведения: {{ post.time_start|date:"d.m.Y H:i" }}</p>
+    {{post.content|linebreaks}}
+    <h1><a href="{% url 'purchase_ticket' slug=post.slug %}">Купить</a></h1>
+  </div>
+</div>
+{% endblock %}

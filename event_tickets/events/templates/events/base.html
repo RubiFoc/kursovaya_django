@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Бронирование билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        {% block header %}
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+                {% if request.user.is_authenticated %}
+                {% if user.is_organizer %}
+                <li><a href="{% url 'organizer_profile' username=user.username %}">Профиль</a></li>
+                {% else%}
+                <li><a href="{% url 'profile' username=user.username %}">Профиль</a></li>
+                {% endif %}
+                {% endif %}
+                {% if user.is_organizer %}
+                <li><a href="{% url 'add_event' %}">Создать мероприятие</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="auth-right">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}">Выйти</a>
+            {% else %}
+            <a href="{% url 'register' %}">Регистрация</a> <a href="{% url 'login' %}">Войти</a>
+            {% endif %}
+        </div>
+        {% endblock %}
+    </div>
+    <div class="sidebar">
+        <div class="sidebar-left"></div>
+        {% block sidebar %}
+        <a href="/">Все мероприятия</a>
+
+        {% for c in cats %}
+        <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+        {% endfor %}
+        <form action="{% url 'search' %}" method="get">
+            <input type="search" type="text" name="search" placeholder="Поиск мероприятия">
+            <button type="submit">Найти</button>
+        </form>
+        {% endblock %}
+    </div>
+    <div class="container row">
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="footer">&copy; 2023 Бронирование билетов</div>
+
+</div>
+
+</body>
+</html>

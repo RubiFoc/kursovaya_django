@@ -1,0 +1,29 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+
+{% block content %}
+<ul class="display-events">
+    {% for p in posts %}
+    <li class="list-articles">
+        {% if request.user.is_authenticated %}
+        <a href="{{ p.get_absolute_url }}">
+            {% else%}
+            <a href="{% url 'login' %}">
+                {% endif %}
+                {% if p.photo %}
+                <p><img class="img-article-left thumb photo" src="{{ p.photo.url }}"></p>
+                {% endif %}
+
+                <h2>{{ p.title }}</h2>
+                <p class="price">{{ p.price}} цена билета</p>
+                <p class="count_tickets">{{ p.count_tickets }} количество билетов</p>
+                <div class="article-panel">
+                    <p class="last"><img class="date-img" src="{% static 'events/images/date.png '%}">{{ p.time_start|date:"d.m.Y H:i" }}</p>
+                </div>
+                <div class="clear"></div>
+    </li>
+    </a>
+    {% endfor %}
+</ul>
+{% endblock %}

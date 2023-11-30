@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Бронирование билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+            </ul>
+        </nav>
+        <div class="auth-right">
+            <a href="{% url 'register' %}">Регистрация</a>
+            <a href="{% url 'login' %}">Войти</a>
+        </div>
+    </div>
+    <div class="container row">
+        <div class="content full">
+            <div class="form register-form">
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <h1>Регистрация</h1>
+                    <div class="input-form">
+                        <input type="text" name="username" placeholder="Логин">
+                    </div>
+                    <div class="input-form">
+<!--                        <input type="text" placeholder="Email">-->
+                        <input type="email" name="email" placeholder="Email">
+                    </div>
+                    <div class="input-form">
+                        <input type="password" name="password1" placeholder="Пароль">
+                    </div>
+                    <div class="input-form">
+                        <input type="password" name="password2" placeholder="Пароль">
+                    </div>
+                    <div class="input-form">
+<!--                        <input type="password" placeholder="Пароль">-->
+                        {{ form.is_organizer.label_tag }}
+                        {{ form.is_organizer }}
+                    </div>
+                    <div class="input-form">
+                        <input type="submit" value="Зарегистрироваться">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">&copy; 2023 Бронирование билетов</div>
+</body>
+</html>

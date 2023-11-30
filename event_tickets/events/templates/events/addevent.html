@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Бронирование билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+                {% if request.user.is_authenticated %}
+                <li><a href="{% url 'organizer_profile' username=user.username %}">Профиль</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="auth-right">
+            <a href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+    <div class="container row">
+        <div class="content full">
+            <div class="form addevent-form">
+                <form method="POST" action="{% url 'add_event' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h1>Создать мероприятие</h1>
+                    <div class="input-form">
+                        <input type="text" name="title" placeholder="Название мероприятия">
+                    </div>
+                    <div class="input-form">
+                        <input type="text" name="slug" placeholder="URL">
+                    </div>
+                    <div class="input-form">
+                        <textarea name="content" placeholder="Описание мероприятия" cols="60" rows="10"
+                                  id="id_content"></textarea>
+                    </div>
+                    <div class="input-form">
+                        {{ form.photo.label_tag }}
+                        {{ form.photo }}
+                    </div>
+                    <div class="input-form">
+                        {{ form.cat }}
+                    </div>
+                    <div class="input-form">
+                        {{ form.count_tickets.label_tag }}
+                        {{ form.count_tickets }}
+                    </div>
+                    <div class="input-form">
+                        {{ form.price.label_tag }}
+                        {{ form.price }}
+                    </div>
+                    <div class="input-form">
+                        {{ form.time_start.label_tag }}
+                        {{ form.time_start }}
+                    </div>
+                    <div class="input-form">
+                        <input type="submit" value="Сохранить">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
