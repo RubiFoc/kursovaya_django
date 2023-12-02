@@ -1,7 +1,8 @@
-from django.urls import path, re_path
+from django.urls import path
 
-from events.views import EventCategory, LoginUser, logout_user, RegisterUser, EventHome, ShowPost, ProfileView, \
-    UserProfileUpdateView, AddEvent, Search, PurchaseTicketView, OrganizerProfileView, EventEditView, CancelPurchaseView
+from events.views import EventCategory, EventHome, ShowPost, AddEvent, Search, PurchaseTicketView, EventEditView, \
+    CancelPurchaseView
+from user.views import UserProfileUpdateView, LoginUser, logout_user, RegisterUser, ProfileView, OrganizerProfileView
 
 urlpatterns = [
     path('', EventHome.as_view(), name='home'),

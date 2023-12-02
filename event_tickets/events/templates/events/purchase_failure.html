@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Покупка билетов</title>
+    <link rel="stylesheet" href="{% static 'events/css/styles.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="header">
+        <nav class="nav-left">
+            <ul>
+                <li><a href="{% url 'home' %}">Главная</a></li>
+                {% if request.user.is_authenticated %}
+                {% if user.is_organizer %}
+                <li><a href="{% url 'organizer_profile' username=user.username %}">Профиль</a></li>
+                {% else%}
+                <li><a href="{% url 'profile' username=user.username %}">Профиль</a></li>
+                {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="auth-right">
+            <a href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+    <div class="container row">
+        <div class="content full">
+            <div class="form purchase-form failure-form">
+                <h2>Вы попытались заказать большее количество билетов, чем доступно!</h2>
+        </div>
+    </div>
+</div>
+</div>
+<div class="footer">&copy; 2023 Бронирование билетов</div>
+</body>
+</html>

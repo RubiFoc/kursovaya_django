@@ -264,12 +264,19 @@ nav a:hover {
 }
 
 .buyment a {
+    padding: 3px;
     text-decoration: none;
-    color: #333333;
+    margin-top: 20px;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    background: #333;
+    transition: .3s;
 }
 
 .buyment a:hover{
-    color: #ff5733;
+    background: #ff5733;
 }
 
 .avatar {
@@ -372,11 +379,14 @@ nav a:hover {
 
 .right-part-post {
     justify-content: right;
-    width: 60%;
+    margin-right: 10.52%;
+    margin-top: 10px;
+    border-radius: 10px;
+    width: 50%;
 }
 
 .right-part-post a:hover {
-    color: #ff5733;
+    background: #ff5733;
 }
 
 .post-container {
@@ -390,13 +400,21 @@ nav a:hover {
 }
 
 .right-part-post {
+    background: #333333;
     padding: 10px;
-    color: #333333;
+    color: #CCCCCC;
 }
 
 .right-part-post a {
     text-decoration: none;
-    color: #333333;
+    margin-top: 20px;
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    background: #ccc;
+    transition: .3s;
+    padding: 5px;
 }
 
 .img-article-left {
@@ -481,4 +499,8 @@ nav a:hover {
 
 .purchase-form img {
     max-width: 300px;
+}
+
+.failure-form {
+    top: 20%;
 }
