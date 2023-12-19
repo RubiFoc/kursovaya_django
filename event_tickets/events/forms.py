@@ -1,10 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
-
-from events.models import User, Event, EventCreation
+from events.models import Event
 
 
 class AddEventForm(forms.ModelForm):
@@ -12,7 +9,6 @@ class AddEventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['cat'].empty_label = "Категория не выбрана"
 
-        # Устанавливаем начальное значение для поля time_start при редактировании
         if 'instance' in kwargs and kwargs['instance'] is not None:
             instance = kwargs['instance']
             if hasattr(instance, 'time_start'):
@@ -26,7 +22,7 @@ class AddEventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ['title', 'slug', 'content', 'photo', 'cat', 'count_tickets', 'price', 'time_start']
+        fields = ['title', 'slug', 'content', 'photo', 'cat', 'count_tickets', 'price', 'time_start', 'place']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-input'}),
             'content': forms.Textarea(attrs={'cols': 60, 'rows': 10}),

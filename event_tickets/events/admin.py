@@ -6,7 +6,7 @@ from user.models import User
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'time_start', 'get_html_photo', 'is_published', 'count_tickets', 'price')
+    list_display = ('id', 'title', 'time_start', 'get_html_photo', 'is_published', 'count_tickets', 'price', 'place')
     list_display_links = ('id', 'title')
     search_fields = ('title', 'content')
     list_editable = ('is_published',)
@@ -14,7 +14,7 @@ class EventAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     fields = (
         'title', 'slug', 'cat', 'content', 'photo', 'get_html_photo', 'count_tickets', 'price', 'is_published',
-        'time_start')
+        'time_start', 'place')
     readonly_fields = ('get_html_photo',)
     save_on_top = True
 

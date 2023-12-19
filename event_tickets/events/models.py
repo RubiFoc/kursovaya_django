@@ -14,6 +14,7 @@ class Event(models.Model):
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Категории")
     price = models.FloatField(default=0, verbose_name='Цена билета')
     count_tickets = models.PositiveIntegerField(default=0, verbose_name='Количество билетов')
+    place = models.CharField(max_length=255, verbose_name="Место проведения")
 
     def __str__(self):
         return self.title

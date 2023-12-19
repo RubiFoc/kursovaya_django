@@ -34,7 +34,7 @@
                     </div>
                     <div class="buyment-right">
                         <p>Название мероприятия: {{ event.event.title }}</p>
-                            <p>Дата создания: {{ event.creation_date }}</p>
+                            <p>Дата проведения: {{ event.event.time_start }}</p>
                             <p>Количество билетов: {{ event.quantity }}</p>
                             <p><a href="{% url 'event_edit' slug=event.event.slug %}">Редактировать</a></p>
                         </div>

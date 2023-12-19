@@ -1,21 +1,15 @@
 from django.contrib import messages
-from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
-from django.core.paginator import Paginator
 from django.http import HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
-from user.forms import UserProfileForm, RegisterUserForm, LoginUserForm
-from user.models import User
 from .forms import AddEventForm, PurchaseForm
 from .models import Event, Category, Purchase, EventCreation
 from .utils import DataMixin
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 
 class EventHome(DataMixin, ListView):
@@ -30,7 +24,7 @@ class EventHome(DataMixin, ListView):
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
-        return Event.objects.filter(is_published=True).select_related('cat')
+        return Event.objects.filter(is_published=True).select_related('cat').order_by('time_start')
 
 
 class EventCategory(DataMixin, ListView):
@@ -40,7 +34,8 @@ class EventCategory(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Event.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related('cat')
+        return Event.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related(
+            'cat').order_by('time_start')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,11 +79,9 @@ class AddEvent(LoginRequiredMixin, DataMixin, CreateView):
     permission_classes = (IsAuthenticated,)
 
     def form_valid(self, form):
-        # Сначала создайте мероприятие
         event = form.save(commit=False)
         event.save()
 
-        # Затем создайте запись в EventCreation
         event_creation = EventCreation(event=event, creator=self.request.user, quantity=event.count_tickets,
                                        price=event)
         event_creation.save()
@@ -123,7 +116,7 @@ class PurchaseTicketView(View):
         try:
             event = Event.objects.get(slug=slug)
         except Event.DoesNotExist:
-            return redirect('home')  # Перенаправляем на другую страницу, если мероприятие не найдено
+            return redirect('home')
 
         form = PurchaseForm(initial={'event': event})
         return render(request, self.template_name, {'form': form, 'event': event})
@@ -138,21 +131,16 @@ class PurchaseTicketView(View):
         if form.is_valid():
             quantity = form.cleaned_data['quantity']
             if quantity > event.count_tickets:
-                # Handle insufficient ticket availability
                 return render(request, 'events/purchase_failure.html')
 
             total_price = quantity * event.price
 
-            # Create a Purchase instance
             purchase = Purchase(event=event, buyer=request.user, quantity=quantity, total_price=total_price)
             purchase.save()
 
-            # Update the event's ticket count
             event.count_tickets -= quantity
             event.save()
-
-            # Redirect to a success page
-            return redirect('home')  # Замените 'events_posts' на имя URL для страницы успеха
+            return redirect('home')
 
         return render(request, self.template_name, {'form': form, 'event': event})
 
@@ -162,19 +150,16 @@ class CancelPurchaseView(View):
         username = self.request.user.username
         purchase = get_object_or_404(Purchase, pk=pk)
 
-        # Убедимся, что пользователь, делающий запрос, является покупателем
         if request.user != purchase.buyer:
             messages.error(request, "У вас нет разрешения на отмену этой покупки.")
-            return redirect('profile', username)  # Перенаправить на домашнюю страницу или другой подходящий URL
+            return redirect('profile', username)
 
         event = purchase.event
         quantity_to_return = purchase.quantity
 
-        # Обновим количество билетов для мероприятия
         event.count_tickets += quantity_to_return
         event.save()
 
-        # Удалим запись о покупке
         purchase.delete()
 
         messages.success(request, "Покупка успешно отменена.")

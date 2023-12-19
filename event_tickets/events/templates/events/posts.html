@@ -16,11 +16,12 @@
                 {% endif %}
 
                 <h2>{{ p.title }}</h2>
-                <p class="price">{{ p.price}} цена билета</p>
+                <p class="price">{{p.price}} цена билета</p>
                 <p class="count_tickets">{{ p.count_tickets }} количество билетов</p>
                 <div class="article-panel">
                     <p class="last"><img class="date-img" src="{% static 'events/images/date.png '%}">{{ p.time_start|date:"d.m.Y H:i" }}</p>
                 </div>
+                <p class="price">{{p.place}}</p>
                 <div class="clear"></div>
     </li>
     </a>

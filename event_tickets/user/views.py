@@ -1,7 +1,7 @@
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, DetailView, CreateView
 from rest_framework.permissions import IsAuthenticated
@@ -45,11 +45,11 @@ class ProfileView(DetailView):
     template_name = 'events/profile.html'
     model = User
     context_object_name = 'user'
-    blocks_per_page = 2  # Количество покупок на странице
+    blocks_per_page = 2
     permission_classes = (IsAuthenticated,)
 
     def get_object(self, queryset=None):
-        return self.request.user  # Отображаем профиль текущего пользователя
+        return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,8 +67,8 @@ class ProfileView(DetailView):
 class UserProfileUpdateView(UpdateView):
     model = User
     form_class = UserProfileForm
-    template_name = 'events/profile_update.html'  # Create a template for the profile update form
-    success_url = reverse_lazy('home')  # Define the URL to redirect to upon successful update
+    template_name = 'events/profile_update.html'
+    success_url = reverse_lazy('home')
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -80,9 +80,8 @@ class OrganizerProfileView(ProfileView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Добавляем информацию об организаторе
         if self.request.user.is_organizer:
-            events_created = EventCreation.objects.filter(creator=self.request.user)
+            events_created = EventCreation.objects.filter(creator=self.request.user).order_by('-pk')
             context['events_created'] = events_created
 
             paginator1 = Paginator(events_created, self.blocks_per_page)

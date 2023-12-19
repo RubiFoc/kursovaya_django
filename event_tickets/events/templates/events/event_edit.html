@@ -19,8 +19,7 @@
             </ul>
         </nav>
         <div class="auth-right">
-            <a href="{% url 'register' %}">Регистрация</a>
-            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'logout' %}">Выйти</a></li>
         </div>
     </div>
     <div class="container row">
@@ -59,6 +58,10 @@
                     <div class="input-form">
                         {{ form.time_start.label_tag }}
                         {{ form.time_start }}
+                    </div>
+                    <div class="input-form">
+                        {{ form.place.label_tag }}
+                        {{ form.place }}
                     </div>
                     <div class="input-form">
                         <input type="submit" value="Сохранить">
