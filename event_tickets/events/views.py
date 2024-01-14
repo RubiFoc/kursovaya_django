@@ -8,8 +8,12 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView
 
 from .forms import AddEventForm, PurchaseForm
 from .models import Event, Category, Purchase, EventCreation
+from .services import EventService, PurchaseService
 from .utils import DataMixin
 from rest_framework.permissions import IsAuthenticated
+
+
+service = EventService()
 
 
 class EventHome(DataMixin, ListView):
@@ -24,7 +28,7 @@ class EventHome(DataMixin, ListView):
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
-        return Event.objects.filter(is_published=True).select_related('cat').order_by('time_start')
+        return service.get_all_events()
 
 
 class EventCategory(DataMixin, ListView):
@@ -34,12 +38,11 @@ class EventCategory(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Event.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related(
-            'cat').order_by('time_start')
+        return service.get_category_events(self.kwargs['cat_slug'])
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c = service.get_category(self.kwargs['cat_slug'])
         c_def = self.get_user_context(title='Категория - ' + str(c.name),
                                       cat_selected=context['posts'][0].cat.pk)
 
@@ -100,7 +103,7 @@ class Search(DataMixin, ListView):
 
     def get_queryset(self):
         search_query = self.request.GET.get('search', '')
-        return Event.objects.filter(title__icontains=search_query, is_published=True)
+        return service.get_searching_result(search_query)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -114,7 +117,8 @@ class PurchaseTicketView(View):
 
     def get(self, request, slug):
         try:
-            event = Event.objects.get(slug=slug)
+            purchase_service = PurchaseService()
+            event = purchase_service.get_purchase_event(slug)
         except Event.DoesNotExist:
             return redirect('home')
 
@@ -122,8 +126,9 @@ class PurchaseTicketView(View):
         return render(request, self.template_name, {'form': form, 'event': event})
 
     def post(self, request, slug):
+        purchase_service = PurchaseService()
         try:
-            event = Event.objects.get(slug=slug)
+            event = purchase_service.get_purchase_event(slug)
         except Event.DoesNotExist:
             return redirect('home')
 
@@ -133,13 +138,7 @@ class PurchaseTicketView(View):
             if quantity > event.count_tickets:
                 return render(request, 'events/purchase_failure.html')
 
-            total_price = quantity * event.price
-
-            purchase = Purchase(event=event, buyer=request.user, quantity=quantity, total_price=total_price)
-            purchase.save()
-
-            event.count_tickets -= quantity
-            event.save()
+            purchase_service.make_purchase(quantity, event, request.user)
             return redirect('home')
 
         return render(request, self.template_name, {'form': form, 'event': event})
@@ -154,13 +153,7 @@ class CancelPurchaseView(View):
             messages.error(request, "У вас нет разрешения на отмену этой покупки.")
             return redirect('profile', username)
 
-        event = purchase.event
-        quantity_to_return = purchase.quantity
-
-        event.count_tickets += quantity_to_return
-        event.save()
-
-        purchase.delete()
-
+        purchase_service = PurchaseService()
+        purchase_service.cancel_purchase(purchase)
         messages.success(request, "Покупка успешно отменена.")
         return redirect('profile', username)

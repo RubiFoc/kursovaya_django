@@ -10,6 +10,9 @@ from events.models import EventCreation, Purchase
 from events.utils import DataMixin
 from user.forms import UserProfileForm, LoginUserForm, RegisterUserForm
 from user.models import User
+from user.services import UserProfileService
+
+service = UserProfileService()
 
 
 class RegisterUser(DataMixin, CreateView):
@@ -54,7 +57,7 @@ class ProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        purchases = Purchase.objects.filter(buyer=user).order_by('-purchase_date')
+        purchases = service.get_purchases(user)
 
         paginator = Paginator(purchases, self.blocks_per_page)
         page = self.request.GET.get('page')
@@ -81,7 +84,7 @@ class OrganizerProfileView(ProfileView):
         context = super().get_context_data(**kwargs)
 
         if self.request.user.is_organizer:
-            events_created = EventCreation.objects.filter(creator=self.request.user).order_by('-pk')
+            events_created = service.get_created_event(self.request.user)
             context['events_created'] = events_created
 
             paginator1 = Paginator(events_created, self.blocks_per_page)
